@@ -6,14 +6,20 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.pivovarov.FoodRecipeSearch.client.RecipeClient;
 import ru.pivovarov.FoodRecipeSearch.command.Command;
+import ru.pivovarov.FoodRecipeSearch.command.CommandName;
+import ru.pivovarov.FoodRecipeSearch.command.KeyBoardGenerator;
+import ru.pivovarov.FoodRecipeSearch.food.AlcoholBase;
 import ru.pivovarov.FoodRecipeSearch.service.SendMessageService;
 import ru.pivovarov.FoodRecipeSearch.service.SendMessageServiceImpl;
 
 public abstract class AbstractCommandTest {
 
     protected FoodRecipeSearchBot foodRecipeSearchBot = Mockito.mock(FoodRecipeSearchBot.class);
+    protected RecipeClient recipeClient = Mockito.mock(RecipeClient.class);
     protected SendMessageService sendMessageService = new SendMessageServiceImpl(foodRecipeSearchBot);
+    protected KeyBoardGenerator keyBoardGenerator = new KeyBoardGenerator();
 
     abstract String getCommandName();
 
@@ -32,6 +38,10 @@ public abstract class AbstractCommandTest {
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
+        if (getCommandName().equals(CommandName.START.getCommandName())) {
+            sendMessage.setParseMode("HTML");
+            sendMessage.setReplyMarkup(keyBoardGenerator.getFoodKeyBoard(AlcoholBase.values()));
+        }
         sendMessage.setText(getCommandMessage());
 
         getCommand().execute(update);

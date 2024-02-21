@@ -1,3 +1,7 @@
 bot:
   username: your_bot_name
   token: your_token
+cocktail-service:
+  url: http://localhost:8080
+server:
+  port: 9090
